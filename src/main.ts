@@ -38,7 +38,7 @@ async function bootstrap() {
   });
   app.use(passport.initialize());
   app.use(passport.session());
-  // app.enableCors();
+  app.enableCors();
 
   // setupRedoc(app);
   setupSwagger(app)
