@@ -3,7 +3,6 @@ import { REQUEST } from '@nestjs/core';
 import { UsersService } from 'src/users/users.service';
 import { UserSignupRequestDto } from './dto/user-signup-request.dto';
 import Utils from 'src/helper/utils';
-import { MonoService } from 'src/common-modules/mono/mono.service';
 import { $Enums, User } from '@prisma/client';
 import Config from 'src/helper/config';
 import { JwtService } from '@nestjs/jwt';
@@ -16,7 +15,6 @@ import { UserProfileDto } from 'src/common-modules/common-dto/user-profile.dto';
 export class AuthService {
   constructor(
     private readonly usersServices: UsersService,
-    private readonly monoService: MonoService,
     @Inject(REQUEST) private readonly request: Request,
     private jwt: JwtService,
   ) {}
@@ -24,47 +22,21 @@ export class AuthService {
   async signup(
     createUserDto: UserSignupRequestDto,
   ) {
-   try {
     const userNames = this.splitFullName(createUserDto.name);
     const hashedPassword = await Utils.hashString(createUserDto.password);
     const { email, phone, userType, country, state, city, companyName } = createUserDto;
-
-    let identityValidationResponse;
-
-    if(createUserDto.userType === $Enums.UserType.EXPERT && createUserDto.idType && createUserDto.idNumber){
-      identityValidationResponse = await this.monoService.verifyIdentity(
-        createUserDto.idType,
-        createUserDto.idNumber,
-        {
-          firstName:userNames.firstName,
-          lastName: userNames.lastName,
-        },
-      );
-    }
-
-    if(createUserDto.userType === $Enums.UserType.EXPERT && identityValidationResponse.data.status === "failed"){
-      console.log("run data")
-      return false
-    }else{
-      const userData = {
-        email,
-        phone,
-        userType,
-        companyName,
-        countryId: country,
-        stateId: state,
-        cityId: city,
-        password: hashedPassword,
-        ...userNames,
-      };
-      return await this.usersServices.create(userData);
-    }
-
-    
-    
-   } catch (error) {
-    return error
-   }
+    const userData = {
+      email,
+      phone,
+      userType,
+      companyName,
+      countryId: country,
+      stateId: state,
+      cityId: city,
+      password: hashedPassword,
+      ...userNames,
+    };
+    return await this.usersServices.create(userData);
   }
 
   async signin(userSigninDto: UserSigninDto) {

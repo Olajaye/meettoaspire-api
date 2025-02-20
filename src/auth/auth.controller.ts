@@ -20,15 +20,11 @@ export class AuthController {
   @Post('signup')
   async getUserTypes(@Body() createUserDto: UserSignupRequestDto) {
     const createdUser = await this.authService.signup(createUserDto);
-    if(createdUser){
-      const accessToken = this.authService.generateAccessToken(createdUser);
-      return new ValidResponse('Signup Successful',  {
-        accessToken,
-        user: new UserProfileDto(createdUser),
-      })
-    }else {
-      return new InValidResponse("Error message")
-    }
+    const accessToken = this.authService.generateAccessToken(createdUser);
+    return new ValidResponse('Signup Successful',  {
+      accessToken,
+      user: new UserProfileDto(createdUser),
+    })
   }
 
 

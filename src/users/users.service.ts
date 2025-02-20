@@ -8,7 +8,7 @@ import Utils from 'src/helper/utils';
 import { v4 as uuidv4 } from 'uuid';
 import * as moment from 'moment';
 import Config from 'src/helper/config';
-import { UserSignupRequestDto } from 'src/auth/dto/user-signup-request.dto';
+
 
 @Injectable()
 export class UsersService {
@@ -17,9 +17,26 @@ export class UsersService {
     @Inject(REQUEST) private readonly request: Request,
   ) {}
 
+  async create(
+    createUserDto: Prisma.UserUncheckedCreateInput,
+  ): Promise<UserWithRelations> {
+    return this.databaseService.$transaction(async (tx) => {
+      const user = await this.databaseService.user.create({
+        data: createUserDto,
+        include: UserIncludeOptions,
+      });
+      // TODO ::  Send the welcome email via a queued job.
+      // await this.mailService.sendMail(
+      //   userWithRating.email, 'Welcome to Eyrie & Obra', {greeting: "Dear " + userWithRating.firstName}, 'welcome-user.hbs'
+      // );
+      await this.createAndSendVerificationToken(user);
+      return user;
+    });
+  }
+
+
   async createAndSendVerificationToken(user, dbTransaction: PrismaTransaction = this.databaseService): Promise<void> {
     const now = new Date();
-
     if (
       user.lastVerificationRequest &&
       now.getTime() - user.lastVerificationRequest.getTime() <
@@ -72,8 +89,6 @@ export class UsersService {
       verificationUrl,
     };
 
-    console.log(payload)
-
     // await this.mailService.sendMail(
     //   user.email,
     //   'Verify Your Account',
@@ -103,25 +118,6 @@ export class UsersService {
 
       return user 
     
-    });
-  }
-
-
-  async create(
-    createUserDto: Prisma.UserUncheckedCreateInput,
-  ): Promise<UserWithRelations> {
-    return this.databaseService.$transaction(async (tx) => {
-      const user = await this.databaseService.user.create({
-        data: createUserDto,
-        include: UserIncludeOptions,
-      });
-      // TODO ::  Send the welcome email via a queued job.
-      // await this.mailService.sendMail(
-      //   userWithRating.email, 'Welcome to Eyrie & Obra', {greeting: "Dear " + userWithRating.firstName}, 'welcome-user.hbs'
-      // );
-      await this.createAndSendVerificationToken(user);
-
-      return user;
     });
   }
 

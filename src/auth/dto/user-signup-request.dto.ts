@@ -54,13 +54,13 @@ export class UserSignupRequestDto {
   @MinLength(8)
   password: string;
 
-  @ApiProperty({ enum: $Enums.IdentificationType })
-  @IsEnum($Enums.IdentificationType)
-  @IsOptional()
-  idType?: $Enums.IdentificationType;
+  // @ApiProperty({ enum: $Enums.IdentificationType })
+  // @IsEnum($Enums.IdentificationType)
+  // @IsOptional()
+  // idType?: $Enums.IdentificationType;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsOptional()
-  idNumber?: string;
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsOptional()
+  // idNumber?: string;
 }
