@@ -6,13 +6,13 @@ import { UsersService } from 'src/users/users.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseService } from 'src/database/database.service';
-import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt-auth.strategy';
+import Config from 'src/helper/config';
 
 @Module({
-  providers: [AuthService, UsersService, DatabaseService],
+  providers: [AuthService, UsersService, DatabaseService, JwtStrategy],
   controllers: [AuthController],
   imports: [
-    PassportModule.register({ session: true }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

@@ -32,7 +32,7 @@ export class AuthController {
   @ApiOkResponse({
     type: UserSigninResponseDto,
   })
-  @Post('signin')
+  @Post('login')
   async signin(
     @Body() userSigninDto: UserSigninDto,
   ): Promise<ValidResponse<UserSigninResponseDto>> {

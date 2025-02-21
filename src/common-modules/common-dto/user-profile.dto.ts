@@ -53,7 +53,6 @@ export class UserProfileDto {
     _.assign(userDetails, {name: getUserFullName(user) });
     // 4. Sort the result just because
     _.assign(this, Utils.sortObjectByKeys(userDetails));
-    console.log(userDetails)
   }
 
  
@@ -71,8 +70,3 @@ export const getUserFullName = (
   return `${firstName}${middle} ${lastName}`;
 };
 
-
-
-// type WithUser<T extends PropertyResponseDto> = T & {
-//   user?: UserProfileDto; // Optional user property
-// };

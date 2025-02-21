@@ -43,7 +43,6 @@ export class AuthService {
     const user = await this.usersServices.getUserProfile({
       email: userSigninDto.email,
     });
-    console.log(user)
     if (!user) {
       throw new BadRequestException('Invalid email');
     }
