@@ -1,16 +1,16 @@
 import Utils from './utils';
-// import SMTPConnection from 'nodemailer/lib/smtp-connection';
+import SMTPConnection from 'nodemailer/lib/smtp-connection';
 
 const Config = {
-  // mail: () =>
-  //   <SMTPConnection.Options>{
-  //     host: Utils.env('MAIL_HOST'),
-  //     port: Number(Utils.env('MAIL_PORT')),
-  //     auth: {
-  //       user: Utils.env('MAIL_USERNAME'),
-  //       pass: Utils.env('MAIL_PASSWORD'),
-  //     },
-  // },
+  mail: () =>
+    <SMTPConnection.Options>{
+      host: Utils.env('MAIL_HOST'),
+      port: Number(Utils.env('MAIL_PORT')),
+      auth: {
+        user: Utils.env('MAIL_USERNAME'),
+        pass: Utils.env('MAIL_PASSWORD'),
+      },
+  },
   api: {
     version: () => Utils.env('API_VERSION', '1'),
   },
@@ -25,7 +25,7 @@ const Config = {
     url: () => Utils.env('APP_URL'),
     mailFromAddress: () => Utils.env('MAIL_FROM_ADDRESS'),
     customerAppDomain: () =>
-      Utils.isProductionEnv() ? 'www.meettoaspire.com' : 'meettoaspire.vercel.app',
+      Utils.isProductionEnv() ? 'www.meettoaspire.com' : 'meettoaspire.vercel',
   },
   database: {
     url: () => Utils.env('DATABASE_URL'),

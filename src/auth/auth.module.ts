@@ -8,9 +8,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseService } from 'src/database/database.service';
 import { JwtStrategy } from './jwt-auth.strategy';
 import Config from 'src/helper/config';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
-  providers: [AuthService, UsersService, DatabaseService, JwtStrategy],
+  providers: [MailService, AuthService, UsersService, DatabaseService, JwtStrategy],
   controllers: [AuthController],
   imports: [
     JwtModule.registerAsync({
