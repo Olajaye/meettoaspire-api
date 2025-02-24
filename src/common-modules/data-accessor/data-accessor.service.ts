@@ -34,7 +34,7 @@ export class DataAccessorService {
       if (requestOptions.cities) {
         result.cities = await tx.city.findMany({
           select: { id: true, name: true, stateId: true },
-          where: { stateId: requestOptions.stateId },
+          where: { stateId: requestOptions.stateId},
         });
       }
      

@@ -24,7 +24,7 @@ export class AuthService {
   ) {
     const userNames = this.splitFullName(createUserDto.name);
     const hashedPassword = await Utils.hashString(createUserDto.password);
-    const { email, phone, userType, country, state, city, companyName } = createUserDto;
+    const { email, phone, userType, country, state, industry, companyName } = createUserDto;
     const userData = {
       email,
       phone,
@@ -32,7 +32,7 @@ export class AuthService {
       companyName,
       countryId: country,
       stateId: state,
-      cityId: city,
+      industry,
       password: hashedPassword,
       ...userNames,
     };

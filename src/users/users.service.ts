@@ -184,7 +184,7 @@ export class UsersService {
     };
   
     // Send email outside the transaction
-    await this.mailService.sendMail(
+    await this.mailService.sendMaill(
       user.email,
       'Verify Your Account',
       payload,

@@ -38,6 +38,10 @@ export class UserSignupRequestDto {
   companyName?:string 
 
   @ApiProperty()
+  @IsOptional()
+  industry?:string 
+
+  @ApiProperty()
   @IsNotEmpty({ message: 'The country field is required' })
   country: number;
 
@@ -45,9 +49,6 @@ export class UserSignupRequestDto {
   @IsNotEmpty({ message: 'The state field is required' })
   state: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  city: number;
 
   @ApiProperty()
   @IsDefined({message: 'The password field is required'})

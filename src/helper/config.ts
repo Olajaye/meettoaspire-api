@@ -25,7 +25,7 @@ const Config = {
     url: () => Utils.env('APP_URL'),
     mailFromAddress: () => Utils.env('MAIL_FROM_ADDRESS'),
     customerAppDomain: () =>
-      Utils.isProductionEnv() ? 'www.meettoaspire.com' : 'meettoaspire.vercel',
+      Utils.isProductionEnv() ? 'www.meettoaspire.com' : 'meettoaspire.vercel.app',
   },
   database: {
     url: () => Utils.env('DATABASE_URL'),
