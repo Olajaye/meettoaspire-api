@@ -18,8 +18,12 @@ export class UserProfileDto {
   phone: string;
   userType: UserType;
   companyName: string| null;
-  industry: string | null;
+  profession: string | null;
+  specializations: string[] | null;
+  availablePeriod: string | null;
   profilePicture: string | null;
+  periodDuration: string | null;           
+  overview: string | null;  
   isActive: boolean;
   isVerified: boolean;
   createdAt: string;
@@ -39,10 +43,14 @@ export class UserProfileDto {
       'createdAt',
       'email',
       'companyName',
+      'specializations',
+      'availablePeriod',  
+      'periodDuration',
+      'overview',
       'isActive',
       'isVerified',
       'newsletterOptIn',
-      'industry',
+      'profession',
       'phone',
       'profilePicture',
       'state',

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Inject, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Inject, NotFoundException, Param, ParseUUIDPipe, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -10,18 +10,33 @@ import { isValidToken } from 'src/helper/token-validator';
 import { ValidResponse } from 'src/helper/valid-response';
 import { UsersService } from './users.service';
 import { ResendVerificationEmailDto } from 'src/common-modules/common-dto/resend-verification-email.dto';
+import { OptionalAuth } from 'src/helper/decorators/optional-auth-guard.decorator';
+import { UserProfileDto } from 'src/common-modules/common-dto/user-profile.dto';
+import { UUID } from 'crypto';
+import { FilterUsersDTO } from './dtos/filterUser.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  @ApiOkResponse()
-  @Post()
-  async getUserTypes() {
-    return "Hello User"
+  @OptionalAuth()
+  @Get()
+  async findAll(@Query() dto: FilterUsersDTO) {
+    return await this.usersService.filterAndPaginate(dto);
+  }
+
+  @OptionalAuth()
+  @Get(':id')
+  async findOne(@Param('id', ParseUUIDPipe) id: UUID): Promise<ValidResponse<UserProfileDto>> {
+    const user = await this.usersService.findOne({ id });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const data = new UserProfileDto(user);
+    return  new ValidResponse('User found', data);
   }
 
   @PublicAccess()

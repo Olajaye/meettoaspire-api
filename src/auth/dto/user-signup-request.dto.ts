@@ -39,7 +39,7 @@ export class UserSignupRequestDto {
 
   @ApiProperty()
   @IsOptional()
-  industry?:string 
+  profession?:string 
 
   @ApiProperty()
   @IsNotEmpty({ message: 'The country field is required' })

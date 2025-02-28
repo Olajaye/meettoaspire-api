@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
@@ -10,6 +10,23 @@ import { join } from 'path';
 import Config from './helper/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ProfileManagementModule } from './users/profile-management/profile-management.module';
+import axios from 'axios';
+import { UsersService } from './users/users.service';
+import { MailService } from './mail/mail.service';
+import { DatabaseService } from './database/database.service';
+import { HttpService } from '@nestjs/axios';
+import { PaystackService } from './paystack/paystack.service';
+import { PaystackController } from './paystack/paystack.controller';
+import { PaystackModule } from './paystack/paystack.module';
+// Define the token
+export const AXIOS_INSTANCE_TOKEN = 'AXIOS_INSTANCE_TOKEN';
+
+// Create the provider for Axios
+export const axiosProvider: Provider = {
+  provide: AXIOS_INSTANCE_TOKEN,
+  useValue: axios,  // This could also be a configured Axios instance if needed
+};
 
 @Module({
   imports: [
@@ -39,8 +56,16 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         },
       },
     }),
+    ProfileManagementModule,
+    PaystackModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, PaystackController],
+  providers: [
+    AppService, 
+    MailService, 
+    UsersService, 
+    DatabaseService,
+    HttpService,  
+    axiosProvider, PaystackService],
 })
 export class AppModule {}

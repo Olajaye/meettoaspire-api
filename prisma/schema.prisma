@@ -77,7 +77,11 @@ model User{
   stateId                    Int?
   city                       City?                   @relation(fields: [cityId], references: [id])
   cityId                     Int?
-  industry                   String?
+  profession                 String?
+  specializations            String[]
+  availablePeriod            String?
+  periodDuration             String?
+  overview                   String?                 @db.VarChar(500)
   companyName                String?
   profilePicture             String?                 @db.VarChar(255)
   isActive                   Boolean                 @default(false)
@@ -94,8 +98,8 @@ model User{
   userType                   UserType
   userRefreshTokens          UserRefreshToken[]
   verificationToken          VerificationToken[]
-     
 }
+
 model UserRefreshToken {
   id               String             @id @default(uuid()) @db.Uuid
   userId           String
@@ -142,3 +146,19 @@ enum IdentificationType {
   INTL_PASSPORT
 }
 
+
+
+// Tranction 
+model BookingSession {
+  id                              Int              @id @default(autoincrement())
+  amount                          Decimal          @db.Decimal(10, 2) 
+  currency                        String?           @default("NGN")   
+  transactionStatus               String?           @default("PENDING") 
+  aspirantEmail                   String?
+  status                          String 
+  expertEmail                     String?
+  transactionReference            String?
+  paymentLink                     String?                        
+  createdAt                       DateTime @default(now())   
+  updatedAt                       DateTime @updatedAt  
+}
