@@ -1,3 +1,4 @@
+import { ValidationOptions } from 'class-validator';
 import { Body, Controller, Delete, Get, InternalServerErrorException, Patch, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -22,7 +23,7 @@ export class ProfileManagementController {
   @Get()
   async getProfile() {
     const authUser: UserWithRelations = await this.usersService.authUser();
-    return new UserProfileDto(authUser);
+    return  new ValidResponse("Sucessful", new UserProfileDto(authUser)) 
   }
 
   
@@ -30,7 +31,7 @@ export class ProfileManagementController {
   async update(
     @Body()
     updateUserDto: UserProfileUpdateDto,
-  ): Promise<UserProfileDto> {
+  ): Promise<ValidResponse<UserProfileDto>> {
     const authUser = await this.usersService.authUser();
     if (updateUserDto.phone) {
       await this.usersService.validateUniquePhoneNumber(
@@ -38,9 +39,10 @@ export class ProfileManagementController {
         updateUserDto.phone,
       );
     }
-    return new UserProfileDto(
-      await this.usersService.updateAnyUserType(authUser, updateUserDto),
-    );
+
+   const data = new UserProfileDto( await this.usersService.updateAnyUserType(authUser, updateUserDto)) 
+  
+    return new ValidResponse("Update successful", data);
   }
 
   @Patch('/change-password')
