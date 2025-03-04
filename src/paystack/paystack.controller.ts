@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PaystackService } from './paystack.service';
 import { InitializePaymentDTO } from './dtos/initializePayment.dto';
 import { ValidResponse } from 'src/helper/valid-response';
 import { PaystackCallbackDto } from './dtos/callback.dto';
+import { UUID } from 'crypto';
 
 
 @ApiTags('Paystack Transactions')
@@ -15,6 +16,11 @@ export class PaystackController {
   constructor(
     private readonly paystackService: PaystackService,  
   ) {}
+
+  @Get("/:id")
+  async getAllTransction(@Param('id', ParseUUIDPipe) id:UUID){
+    return new ValidResponse("Sucess", await this.paystackService.getUserTarncation(id))
+  }
 
   @Post('/initialize')
   async initializeTransaction(@Body() initializePaymentDTO: InitializePaymentDTO,) {

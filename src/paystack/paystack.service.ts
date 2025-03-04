@@ -8,6 +8,7 @@ import { REQUEST } from '@nestjs/core';
 import { PaymentStatus, PaystackCreateTransactionResponseDto, PaystackMetadata, PaystackVerifyTransactionResponseDto } from 'src/helper/types/paystack';
 import { DatabaseService } from 'src/database/database.service';
 import { PaystackCallbackDto } from './dtos/callback.dto';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class PaystackService {
@@ -17,10 +18,20 @@ export class PaystackService {
     @Inject(REQUEST) private readonly request: Request,
   ) {}
 
+  async getUserTarncation(id:UUID){
+    return await this.databaseService.bookingSession.findMany({
+      where: {
+        Userid: id
+      }
+    })
+  }
+
+  async getExpertBookedSession(){
+
+  }
+
   async initializeTransaction(initializePaymentDTO: InitializePaymentDTO) {
-
     const user = await this.request.user
-
     await this.usersService.findOne({email: initializePaymentDTO.expertemail})
     const metadata: PaystackMetadata = {
       user: user.email,
@@ -44,16 +55,15 @@ export class PaystackService {
       ],
     };
 
-    const payload = {
+    const payload: { email: string; amount: number; metadata: PaystackMetadata; callback_url?: string } = {
       email: user.email,
       amount: initializePaymentDTO.amount, 
       metadata   
     };
 
-    // const paystackCallbackUrl = 'http://localhost:3500/paystack-transactions/callback';
-
-    // if(paystackCallbackUrl) {
-    //   payload['callback_url'] = paystackCallbackUrl;
+    // const paystackCallbackUrl = "https://localhost:3500/paystack-transactions/callback";
+    // if (paystackCallbackUrl) {
+    //   payload.callback_url = paystackCallbackUrl;
     // }
 
     let result: PaystackCreateTransactionResponseDto = {} as PaystackCreateTransactionResponseDto;
@@ -71,12 +81,10 @@ export class PaystackService {
     } catch (error) {
       console.log(error)  
     }
-
-   
     const data = result.data;
-
     const transtion = await this.databaseService.bookingSession.create({
       data: {
+        Userid: user.id,
         transactionReference: data.reference,
         paymentLink: data.authorization_url,
         amount: initializePaymentDTO.amount,  
@@ -90,8 +98,6 @@ export class PaystackService {
    
   }
 
-
-
   async verifyTransaction(dto: PaystackCallbackDto) {
     const transaction = await this.databaseService.bookingSession.findFirst({
       where: {
@@ -101,13 +107,9 @@ export class PaystackService {
     if (!transaction) {
       return null;
     }
-
     const reference = transaction.transactionReference;
     const url = `https://api.paystack.co/transaction/verify/${reference}`;
-
     let response: AxiosResponse<PaystackVerifyTransactionResponseDto> | null = null;
-
-    
     try {
       response = await axios.get<PaystackVerifyTransactionResponseDto>(url, {
         headers: {
@@ -121,7 +123,6 @@ export class PaystackService {
     if (!response) {
       return null;
     }
-
     const result = response.data;
 
     const transactionStatus = result?.data?.status;

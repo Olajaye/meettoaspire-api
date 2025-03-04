@@ -6,11 +6,6 @@ export class InitializePaymentDTO {
     @IsString()
     aspirantname: string;
 
-    // @ApiProperty({example: 'sampleuser@example.com'})
-    // @IsDefined({ message: 'The email field is required' })
-    // @IsEmail({}, { message: 'The email provided is invalid' })
-    // payeremail: string;
-
     @ApiProperty({example: 'sampleuser@example.com'})
     @IsDefined({ message: 'The email field is required' })
     @IsEmail({}, { message: 'The email provided is invalid' })

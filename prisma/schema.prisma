@@ -98,6 +98,7 @@ model User{
   userType                   UserType
   userRefreshTokens          UserRefreshToken[]
   verificationToken          VerificationToken[]
+  bookSession                BookingSession[]
 }
 
 model UserRefreshToken {
@@ -161,4 +162,7 @@ model BookingSession {
   paymentLink                     String?                        
   createdAt                       DateTime @default(now())   
   updatedAt                       DateTime @updatedAt  
+  Userid                          String
+  User                            User @relation(fields: [Userid], references: [id])
+ 
 }
