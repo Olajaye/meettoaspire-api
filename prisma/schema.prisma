@@ -99,6 +99,7 @@ model User{
   userRefreshTokens          UserRefreshToken[]
   verificationToken          VerificationToken[]
   bookSession                BookingSession[]
+  ScheduleSession            ScheduleSession[]
 }
 
 model UserRefreshToken {
@@ -158,11 +159,32 @@ model BookingSession {
   aspirantEmail                   String?
   status                          String 
   expertEmail                     String?
+  expertID                        String?
   transactionReference            String?
   paymentLink                     String?                        
   createdAt                       DateTime @default(now())   
   updatedAt                       DateTime @updatedAt  
-  Userid                          String
-  User                            User @relation(fields: [Userid], references: [id])
+  UserId                          String
+  User                            User @relation(fields: [UserId], references: [id])
  
+}
+
+
+model ScheduleSession {
+  id                              Int              @id @default(autoincrement())
+  title                           String?
+  type                            SessionType
+  date                            DateTime?
+  time                            String?
+  description                     String?
+  UserId                          String
+  User                            User @relation(fields: [UserId], references: [id])
+  sessionRefrences                String
+  aspirantId                      String
+}
+
+enum SessionType {
+  ALL  
+  ONLINESESSION
+  PHYSICAL
 }

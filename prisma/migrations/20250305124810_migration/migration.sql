@@ -112,10 +112,12 @@ CREATE TABLE "BookingSession" (
     "aspirantEmail" TEXT,
     "status" TEXT NOT NULL,
     "expertEmail" TEXT,
+    "expertID" TEXT,
     "transactionReference" TEXT,
     "paymentLink" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "UserId" TEXT NOT NULL,
 
     CONSTRAINT "BookingSession_pkey" PRIMARY KEY ("id")
 );
@@ -170,3 +172,6 @@ ALTER TABLE "user_refresh_token" ADD CONSTRAINT "user_refresh_token_userId_fkey"
 
 -- AddForeignKey
 ALTER TABLE "verification_tokens" ADD CONSTRAINT "verification_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BookingSession" ADD CONSTRAINT "BookingSession_UserId_fkey" FOREIGN KEY ("UserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

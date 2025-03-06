@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { InitializePaymentDTO } from './dtos/initializePayment.dto';
 import { UsersService } from 'src/users/users.service';
@@ -21,18 +21,38 @@ export class PaystackService {
   async getUserTarncation(id:UUID){
     return await this.databaseService.bookingSession.findMany({
       where: {
-        Userid: id
+        UserId: id
       }
     })
   }
 
-  async getExpertBookedSession(){
-
+  async getExpertBookedSession(id:UUID){
+    return await this.databaseService.bookingSession.findMany({
+      where: {
+        expertID: id,
+        status: PaymentStatus.paid
+      },
+      include:{
+        User: {
+          select:{
+            firstName:true,
+            lastName: true,
+            middleName:true,
+            profilePicture: true,
+            overview: true,
+            profession: true
+          }
+        }
+      }
+    })
   }
 
   async initializeTransaction(initializePaymentDTO: InitializePaymentDTO) {
     const user = await this.request.user
-    await this.usersService.findOne({email: initializePaymentDTO.expertemail})
+    const expert = await this.usersService.findOne({email: initializePaymentDTO.expertemail});
+    if(!expert){
+      throw new NotFoundException("Expert Not Found")
+    }
     const metadata: PaystackMetadata = {
       user: user.email,
       expert: initializePaymentDTO.expertemail,
@@ -84,7 +104,8 @@ export class PaystackService {
     const data = result.data;
     const transtion = await this.databaseService.bookingSession.create({
       data: {
-        Userid: user.id,
+        UserId: user.id,
+        expertID: expert.id,
         transactionReference: data.reference,
         paymentLink: data.authorization_url,
         amount: initializePaymentDTO.amount,  
@@ -93,9 +114,7 @@ export class PaystackService {
         status: PaymentStatus.notPaid
       }
     });
-
     return transtion
-   
   }
 
   async verifyTransaction(dto: PaystackCallbackDto) {
@@ -130,7 +149,7 @@ export class PaystackService {
 
     if (paymentConfirmed) {
       transaction.status = PaymentStatus.paid;
-      transaction.transactionStatus = transactionStatus;
+      transaction.transactionStatus = "SUCCESSFULL";
     } else {
       transaction.status = PaymentStatus.notPaid;
     }

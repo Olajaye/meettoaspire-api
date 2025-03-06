@@ -20,7 +20,6 @@ export class AuthController {
   @Post('signup')
   async getUserTypes(@Body() createUserDto: UserSignupRequestDto) {
     const createdUser = await this.authService.signup(createUserDto);
-    console.log('createdUser', createdUser);
     const accessToken = this.authService.generateAccessToken(createdUser);
     return new ValidResponse('Signup Successful',  {
       accessToken,

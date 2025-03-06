@@ -22,6 +22,12 @@ export class PaystackController {
     return new ValidResponse("Sucess", await this.paystackService.getUserTarncation(id))
   }
 
+  @Get("/expertSession/:id")
+  async getExpertSessions(@Param('id', ParseUUIDPipe) id:UUID){
+    return new ValidResponse("Sucess", await this.paystackService.getExpertBookedSession(id))
+    
+  }
+
   @Post('/initialize')
   async initializeTransaction(@Body() initializePaymentDTO: InitializePaymentDTO,) {
     const payment = await this.paystackService.initializeTransaction(initializePaymentDTO);

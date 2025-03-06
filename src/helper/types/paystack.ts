@@ -29,7 +29,7 @@ export type PaystackVerifyTransactionResponseDto = {
 };
 
 export enum PaymentStatus {
-  paid = 'paid',
-  notPaid = 'not paid',
+  paid = 'PAID',
+  notPaid = 'NOT-PAID',
 }
 

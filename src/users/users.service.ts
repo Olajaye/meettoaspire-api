@@ -47,7 +47,7 @@ export class UsersService {
       });
   
       // Send the welcome email
-      await this.mailService.sendMail(
+      await this.mailService.sendMaill(
         user.email,
         'Welcome to Meet to Aspire',
         { greeting: 'Dear ' + user.firstName },
@@ -118,8 +118,9 @@ export class UsersService {
       verificationUrl,
     };
   
+    console.log(user.email)
     // Send email outside the transaction
-    await this.mailService.sendMail(
+    await this.mailService.sendMaill(
       user.email,
       'Verify Your Account',
       payload,
