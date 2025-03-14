@@ -22,6 +22,7 @@ import { PaystackModule } from './paystack/paystack.module';
 import { CalenderController } from './calender/calender.controller';
 import { CalenderService } from './calender/calender.service';
 import { CalenderModule } from './calender/calender.module';
+import { ZoomModule } from './zoom/zoom.module';
 // Define the token
 export const AXIOS_INSTANCE_TOKEN = 'AXIOS_INSTANCE_TOKEN';
 
@@ -62,6 +63,7 @@ export const axiosProvider: Provider = {
     ProfileManagementModule,
     PaystackModule,
     CalenderModule,
+    ZoomModule,
   ],
   controllers: [AppController, PaystackController, CalenderController],
   providers: [

@@ -166,6 +166,7 @@ model BookingSession {
   updatedAt                       DateTime @updatedAt  
   UserId                          String
   User                            User @relation(fields: [UserId], references: [id])
+  sessionScheduled                Boolean?  @default(false)
  
 }
 
@@ -180,8 +181,8 @@ model ScheduleSession {
   UserId                          String
   User                            User @relation(fields: [UserId], references: [id])
   sessionRefrences                String
-  aspirantId                      String
-}
+  aspirantId                      String 
+}  
 
 enum SessionType {
   ALL  

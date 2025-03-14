@@ -24,4 +24,9 @@ export class CalenderController {
   async getExpertSchedule(@Param('id', ParseUUIDPipe) id:UUID){
     return await this.calenderService.getExpertSchedule(id)
   }
+
+  @Get('/aspirant/:id')
+  async getAspirantSchedule(@Param('id', ParseUUIDPipe) id:UUID){
+    return await this.calenderService.getAspirantSchedule(id)
+  }
 }

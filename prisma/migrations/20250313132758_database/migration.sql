@@ -7,6 +7,9 @@ CREATE TYPE "UserType" AS ENUM ('EXPERT', 'ASPIRANT');
 -- CreateEnum
 CREATE TYPE "IdentificationType" AS ENUM ('NIN', 'TIN', 'BVN', 'INTL_PASSPORT');
 
+-- CreateEnum
+CREATE TYPE "SessionType" AS ENUM ('ALL', 'ONLINESESSION', 'PHYSICAL');
+
 -- CreateTable
 CREATE TABLE "countries" (
     "id" SERIAL NOT NULL,
@@ -122,6 +125,22 @@ CREATE TABLE "BookingSession" (
     CONSTRAINT "BookingSession_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "ScheduleSession" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT,
+    "type" "SessionType" NOT NULL,
+    "date" TIMESTAMP(3),
+    "time" TEXT,
+    "description" TEXT,
+    "UserId" TEXT NOT NULL,
+    "sessionRefrences" TEXT NOT NULL,
+    "aspirantId" TEXT NOT NULL,
+    "bookingid" INTEGER,
+
+    CONSTRAINT "ScheduleSession_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "countries_name_key" ON "countries"("name");
 
@@ -149,6 +168,9 @@ CREATE INDEX "verification_tokens_email_idx" ON "verification_tokens"("email");
 -- CreateIndex
 CREATE INDEX "verification_tokens_expiresAt_idx" ON "verification_tokens"("expiresAt");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "ScheduleSession_bookingid_key" ON "ScheduleSession"("bookingid");
+
 -- AddForeignKey
 ALTER TABLE "states" ADD CONSTRAINT "states_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -175,3 +197,9 @@ ALTER TABLE "verification_tokens" ADD CONSTRAINT "verification_tokens_userId_fke
 
 -- AddForeignKey
 ALTER TABLE "BookingSession" ADD CONSTRAINT "BookingSession_UserId_fkey" FOREIGN KEY ("UserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ScheduleSession" ADD CONSTRAINT "ScheduleSession_UserId_fkey" FOREIGN KEY ("UserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ScheduleSession" ADD CONSTRAINT "ScheduleSession_bookingid_fkey" FOREIGN KEY ("bookingid") REFERENCES "BookingSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;

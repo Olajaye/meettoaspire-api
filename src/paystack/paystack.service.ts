@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { InitializePaymentDTO } from './dtos/initializePayment.dto';
@@ -42,7 +42,7 @@ export class PaystackService {
             overview: true,
             profession: true
           }
-        }
+        }      
       }
     })
   }
@@ -111,7 +111,8 @@ export class PaystackService {
         amount: initializePaymentDTO.amount,  
         expertEmail: initializePaymentDTO.expertemail,
         aspirantEmail: user.email,
-        status: PaymentStatus.notPaid
+        status: PaymentStatus.notPaid,
+        sessionScheduled: false, // Add appropriate date he
       }
     });
     return transtion

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Type } from 'class-transformer';
 import { $Enums, SessionType } from "@prisma/client";
 
@@ -7,6 +7,10 @@ export class CreateScheduleDto {
   @ApiProperty()
   @IsString()
   sessionRefrences: string
+
+  @ApiProperty()
+  @IsString()
+  bookingId: string
 
   @ApiProperty()
   @IsString()

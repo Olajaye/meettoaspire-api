@@ -25,6 +25,28 @@ export class CalenderService {
     return new ValidResponse("Schedule Created", scheduledSession)
   }
 
+  async getAspirantSchedule(id:UUID) {
+    const scheduledSession = await this.databaseService.scheduleSession.findMany({
+      where:{
+        aspirantId: id
+      },
+      include:{
+        User:{
+          select:{
+            firstName:true,
+            lastName: true,
+            middleName:true,
+            profilePicture: true,
+            overview: true,
+            profession: true
+          }
+        }
+      }
+    })
+    return new ValidResponse("Schedule Created", scheduledSession)
+  }
+
+
 
   async createSchedule(createScheduleDto: CreateScheduleDto){
     const user = this.request.user;
@@ -43,11 +65,24 @@ export class CalenderService {
       description: createScheduleDto.description,
       sessionRefrences: createScheduleDto.sessionRefrences,
       aspirantId: createScheduleDto.aspirantId,
-      UserId: user.id
+      UserId: user.id,
     }
 
-    const schedule = await this.databaseService.scheduleSession.create({ data: createSchedule})
+    return this.databaseService.$transaction(async (tx) => {
+      const schedule = await tx.scheduleSession.create({ data: createSchedule})
 
-    return new ValidResponse("Schedule Created", schedule)
+      await tx.bookingSession.update({
+        where: {
+          id: Number(createScheduleDto.bookingId)
+        },
+        data:{
+          sessionScheduled: true
+        } 
+        
+      })
+
+      return new ValidResponse("Schedule Created", schedule);
+
+    })
   }
 }
