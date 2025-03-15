@@ -121,6 +121,7 @@ CREATE TABLE "BookingSession" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "UserId" TEXT NOT NULL,
+    "sessionScheduled" BOOLEAN DEFAULT false,
 
     CONSTRAINT "BookingSession_pkey" PRIMARY KEY ("id")
 );
@@ -136,7 +137,6 @@ CREATE TABLE "ScheduleSession" (
     "UserId" TEXT NOT NULL,
     "sessionRefrences" TEXT NOT NULL,
     "aspirantId" TEXT NOT NULL,
-    "bookingid" INTEGER,
 
     CONSTRAINT "ScheduleSession_pkey" PRIMARY KEY ("id")
 );
@@ -168,9 +168,6 @@ CREATE INDEX "verification_tokens_email_idx" ON "verification_tokens"("email");
 -- CreateIndex
 CREATE INDEX "verification_tokens_expiresAt_idx" ON "verification_tokens"("expiresAt");
 
--- CreateIndex
-CREATE UNIQUE INDEX "ScheduleSession_bookingid_key" ON "ScheduleSession"("bookingid");
-
 -- AddForeignKey
 ALTER TABLE "states" ADD CONSTRAINT "states_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -200,6 +197,3 @@ ALTER TABLE "BookingSession" ADD CONSTRAINT "BookingSession_UserId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "ScheduleSession" ADD CONSTRAINT "ScheduleSession_UserId_fkey" FOREIGN KEY ("UserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ScheduleSession" ADD CONSTRAINT "ScheduleSession_bookingid_fkey" FOREIGN KEY ("bookingid") REFERENCES "BookingSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;
