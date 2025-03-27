@@ -1,0 +1,218 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// static data 
+model Country {
+  id               Int     @id @default(autoincrement())
+  name             String  @unique
+  capital          String?
+  code             String
+  currency         String?
+  currencyName     String?
+  currencySymbol   String?
+  phonePrefix      String?
+  flagEmoji        String? @db.Text
+  flagEmojiUnicode String? @db.VarChar(100)
+  State            State[]
+  City             City[]
+  User             User[]
+
+  @@map("countries")
+}
+
+model State {
+  id        Int     @id @default(autoincrement())
+  name      String
+  stateCode String  @db.VarChar(10)
+  countryId Int
+  country   Country @relation(fields: [countryId], references: [id])
+  Cities    City[]
+  User      User[]
+
+  @@map("states")
+}
+
+model City {
+  id        Int     @id @default(autoincrement())
+  name      String
+  stateId   Int
+  state     State   @relation(fields: [stateId], references: [id])
+  countryId Int
+  country   Country @relation(fields: [countryId], references: [id])
+  User      User[]
+
+  @@map("cities")
+}
+
+model User {
+  id                      String              @id @default(uuid())
+  firstName               String
+  middleName              String?
+  lastName                String
+  phone                   String?             @unique
+  email                   String              @unique
+  password                String              @db.VarChar(100)
+  country                 Country?            @relation(fields: [countryId], references: [id])
+  countryId               Int?
+  state                   State?              @relation(fields: [stateId], references: [id])
+  stateId                 Int?
+  city                    City?               @relation(fields: [cityId], references: [id])
+  cityId                  Int?
+  profession              String?
+  specializations         String[]
+  availablePeriod         String?
+  periodDuration          String?
+  overview                String?             @db.VarChar(500)
+  companyName             String?
+  profilePicture          String?             @db.VarChar(255)
+  isActive                Boolean             @default(false)
+  isVerified              Boolean             @default(false)
+  newsletterOptIn         Boolean             @default(false)
+  lastVerificationRequest DateTime?
+  emailVerifiedAt         DateTime?
+  resetPasswordToken      String?
+  resetPasswordExpires    DateTime?
+  validIdentityRecord     String?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  deletedAt               DateTime?
+  userType                UserType
+  userRefreshTokens       UserRefreshToken[]
+  verificationToken       VerificationToken[]
+  bookSession             BookingSession[]
+  ScheduleSession         ScheduleSession[]
+  notifications           UserNotification[]
+  deviceTokens            UserDeviceToken[]
+}
+
+model UserRefreshToken {
+  id               String             @id @default(uuid()) @db.Uuid
+  userId           String
+  user             User               @relation(fields: [userId], references: [id])
+  accessTokenHash  String
+  refreshTokenHash String
+  tokenStatus      RefreshTokenStatus
+  expiryDate       DateTime
+  createdAt        DateTime           @default(now())
+
+  @@index([createdAt])
+  @@index([expiryDate])
+  @@map("user_refresh_token")
+}
+
+model UserDeviceToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+
+  @@map("user_device_tokens")
+}
+
+model UserNotification {
+  id        String                 @id @default(uuid()) @db.Uuid
+  userId    String
+  user      User                   @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  link      String?
+  tag       String
+  metadata  Json
+  status    UserNotificationStatus @default(UNREAD)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+
+  @@map("user_notifications")
+}
+
+enum UserNotificationStatus {
+  READ
+  UNREAD
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  token     String   @unique @db.Uuid
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([email])
+  @@index([expiresAt])
+  @@map("verification_tokens")
+}
+
+enum RefreshTokenStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum UserType {
+  EXPERT
+  ASPIRANT
+}
+
+enum IdentificationType {
+  NIN
+  TIN
+  BVN
+  INTL_PASSPORT
+}
+
+// Tranction 
+model BookingSession {
+  id                   Int              @id @default(autoincrement())
+  amount               Decimal          @db.Decimal(10, 2)
+  currency             String?          @default("NGN")
+  transactionStatus    String?          @default("PENDING")
+  aspirantEmail        String?
+  status               String
+  expertEmail          String?
+  expertID             String?
+  transactionReference String?          @unique
+  paymentLink          String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  UserId               String
+  User                 User             @relation(fields: [UserId], references: [id])
+  sessionScheduled     Boolean?         @default(false)
+  scheduleSession      ScheduleSession?
+}
+
+model ScheduleSession {
+  id               Int             @id @default(autoincrement())
+  title            String?
+  type             SessionType
+  date             DateTime?
+  time             String?
+  description      String?
+  UserId           String
+  User             User            @relation(fields: [UserId], references: [id])
+  sessionRefrences String
+  aspirantId       String
+  booking          String?         @unique
+  bookingSession   BookingSession? @relation(fields: [booking], references: [transactionReference])
+}
+
+enum SessionType {
+  ALL
+  ONLINESESSION
+  PHYSICAL
+}
